@@ -21,8 +21,7 @@ class MemberRepositoryTest {
 
     @Test
     void testMember() throws Exception {
-        Member member = new Member();
-        member.setUsername("이민경");
+        Member member = new Member("이민경");
 
         Member saveMember = memberRepository.save(member);
         Member findMember = memberRepository.findById(saveMember.getId()).get();
