@@ -3,6 +3,10 @@ package study.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
@@ -150,5 +154,30 @@ class MemberRepositoryTest {
         for (Member findByName : findByNames) {
             System.out.println(findByName.getId() + ", " + findByName.getUsername());
         }
+    }
+
+    @Test
+    public void paging() {
+        memberRepository.save(new Member("연서", 10));
+        memberRepository.save(new Member("동민", 10));
+        memberRepository.save(new Member("호위", 10));
+        memberRepository.save(new Member("콧물이", 10));
+        memberRepository.save(new Member("이민경", 10));
+
+        int age = 10;
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+        // 외부로 반환하면 안됨!!!
+        Page<Member> page = memberRepository.findByAge(age, pageRequest);
+        // map: 매핑! 내부의 내용을 다른걸로 바꾸는 것!
+        Page<MemberDTO> toMap = page.map(m -> new MemberDTO(m.getId(), m.getUsername(), null)); // 얘는 외부로 반환해도됨
+
+        List<Member> content = page.getContent(); // 조회된 데이터
+        assertThat(content.size()).isEqualTo(3); // 조회된 데이터 수
+        assertThat(page.getTotalElements()).isEqualTo(5); // 전체 데이터 수
+        assertThat(page.getNumber()).isEqualTo(0); // 페이지 번호
+        assertThat(page.getTotalPages()).isEqualTo(2); // 전체 페이지 번호
+        assertThat(page.isFirst()).isTrue(); // 첫번째 페이지인가?
+        assertThat(page.hasNext()).isTrue(); // 다음 페이지가 존재하는가?
     }
 }
