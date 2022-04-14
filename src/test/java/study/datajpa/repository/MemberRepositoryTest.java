@@ -1,25 +1,25 @@
 package study.datajpa.repository;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
+import study.datajpa.dto.MemberDTO;
+import study.datajpa.entity.Team;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 @Rollback(false)
 class MemberRepositoryTest {
 
-    @Autowired
-    private MemberRepository memberRepository;
+    @Autowired private MemberRepository memberRepository;
+    @Autowired private TeamRepository teamRepository;
 
     @Test
     void testMember() throws Exception {
@@ -103,5 +103,38 @@ class MemberRepositoryTest {
 
         List<Member> findMembers = memberRepository.findUser("AAA", 10);
         assertThat(findMembers.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void testValueQuery(){
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<String> usernameList = memberRepository.findUsernameList();
+        assertThat(usernameList.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void findMemberAndTeam() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 20, teamA);
+        Member member3 = new Member("member3", 30, teamB);
+        Member member4 = new Member("member4", 40, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        List<MemberDTO> memberAndTeam = memberRepository.findMemberAndTeam();
+        for (MemberDTO memberDTO : memberAndTeam) {
+            System.out.println(memberDTO.getMemberId() + ", " + memberDTO.getUsername() + ", " + memberDTO.getTeamName());
+        }
     }
 }
