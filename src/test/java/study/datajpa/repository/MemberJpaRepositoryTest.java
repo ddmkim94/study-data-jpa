@@ -1,5 +1,6 @@
 package study.datajpa.repository;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,5 +55,35 @@ class MemberJpaRepositoryTest {
         assertThat(findMembers.get(0).getUsername()).isEqualTo("AAA");
         assertThat(findMembers.get(0).getAge()).isEqualTo(20);
         assertThat(findMembers.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void paging() {
+        memberJpaRepository.save(new Member("연서", 10));
+        memberJpaRepository.save(new Member("동민", 10));
+        memberJpaRepository.save(new Member("호위", 10));
+        memberJpaRepository.save(new Member("콧물이", 10));
+        memberJpaRepository.save(new Member("이민경", 10));
+
+        int age = 10;
+        /**
+         * 0번 데이터부터 3개씩 잘라서 가져오겠다~
+         */
+        int offset = 0;
+        int limit = 3;
+
+        List<Member> members = memberJpaRepository.findByPage(age, offset, limit);
+        long totalCount = memberJpaRepository.totalCount(age);
+
+        /**
+         * 페이지 계산 공식...
+         * 전체 페이지 수 % size == 0이면 (전체 페이지 수 / size)
+         * else (전체 페이지 수 / size) + 1;
+         */
+        long totalPage = (totalCount % limit != 0) ? (totalCount / limit) + 1 : (totalCount / limit);
+
+        assertThat(members.size()).isEqualTo(3);
+        assertThat(totalCount).isEqualTo(5);
+        assertThat(totalPage).isEqualTo(2);
     }
 }
