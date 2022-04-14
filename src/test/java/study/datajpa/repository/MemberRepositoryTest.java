@@ -82,4 +82,15 @@ class MemberRepositoryTest {
         List<Member> findMembers = memberRepository.findYeonSeoBy();
         assertThat(findMembers.size()).isEqualTo(2);
     }
+
+    @Test
+    public void testNamedQuery(){
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("AAA", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> findMembers = memberRepository.findByUsername("AAA");
+        assertThat(findMembers.size()).isEqualTo(2);
+    }
 }
