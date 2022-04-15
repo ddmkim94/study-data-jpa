@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.entity.Member;
@@ -36,4 +37,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByNames(@Param("names") List<String> names);
 
     Page<Member> findByAge(int age, Pageable pageable);
+
+    /**
+     * SELECT문이 아니라는 걸 나타냄
+     * clearAutomatically => 벌크 연산이 끝나고 영속성 컨텍스트와 데이터베이스의 데이터 차이를 없애기 위해
+     * 영속성 컨텍스트를 초기화 시킴
+     */
+    @Modifying(clearAutomatically = true)
+    @Query("update Member m set m.age = m.age + 1 where m.age = :age")
+    int bulkAgePlus(@Param("age") int age);
 }

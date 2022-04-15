@@ -13,6 +13,7 @@ import study.datajpa.entity.Member;
 import study.datajpa.dto.MemberDTO;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +26,7 @@ class MemberRepositoryTest {
 
     @Autowired private MemberRepository memberRepository;
     @Autowired private TeamRepository teamRepository;
+    @Autowired private EntityManager em;
 
     @Test
     void testMember() throws Exception {
@@ -179,5 +181,19 @@ class MemberRepositoryTest {
         assertThat(page.getTotalPages()).isEqualTo(2); // 전체 페이지 번호
         assertThat(page.isFirst()).isTrue(); // 첫번째 페이지인가?
         assertThat(page.hasNext()).isTrue(); // 다음 페이지가 존재하는가?
+    }
+
+    @Test
+    public void bulkTest() {
+        memberRepository.save(new Member("연서", 10));
+        memberRepository.save(new Member("동민", 10));
+        memberRepository.save(new Member("호위", 10));
+        memberRepository.save(new Member("콧물이", 10));
+        memberRepository.save(new Member("이민경", 10));
+
+        int updateCount = memberRepository.bulkAgePlus(10);
+
+        assertThat(updateCount).isEqualTo(5);
+        System.out.println(memberRepository.findById(1L).get().getAge());
     }
 }
