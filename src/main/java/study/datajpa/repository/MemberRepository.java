@@ -3,6 +3,7 @@ package study.datajpa.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import study.datajpa.entity.Member;
 import study.datajpa.dto.MemberDTO;
 
+import javax.persistence.Entity;
 import java.util.List;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -50,4 +52,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // fetch join을 이용해서 데이터 한 번에 가져오기 (N+1 문제 해결!)
     @Query("select m from Member m join fetch m.team")
     List<Member> findMemberFetchJoinTeam();
+
+    @EntityGraph(attributePaths = {"team"})
+    List<Member> findEntityGraphByUsername(String username);
 }

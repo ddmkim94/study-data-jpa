@@ -210,7 +210,7 @@ class MemberRepositoryTest {
         em.clear();
 
         // List<Member> members = memberRepository.findAll();
-        List<Member> members = memberRepository.findMemberFetchJoinTeam();
+        List<Member> members = memberRepository.findEntityGraphByUsername("이민경");
         for (Member member : members) {
             System.out.println(member.getTeam().getName());
         }
