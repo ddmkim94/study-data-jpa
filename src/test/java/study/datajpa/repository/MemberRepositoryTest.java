@@ -210,9 +210,22 @@ class MemberRepositoryTest {
         em.clear();
 
         // List<Member> members = memberRepository.findAll();
-        List<Member> members = memberRepository.findEntityGraphByUsername("이민경");
+        List<Member> members = memberRepository.findMemberFetchJoinTeam();
+        // List<Member> members = memberRepository.findEntityGraphByUsername("이민경");
         for (Member member : members) {
             System.out.println(member.getTeam().getName());
         }
+    }
+
+    @Test
+    public void queryHint() {
+        memberRepository.save(new Member("노휘오", 31));
+        em.flush();
+        em.clear();
+
+        Member findMember = memberRepository.findReadOnlyByUsername("노휘오");
+        findMember.setUsername("이민경");
+
+        em.flush(); // Update Query 실행 X!!
     }
 }
