@@ -196,4 +196,23 @@ class MemberRepositoryTest {
         assertThat(updateCount).isEqualTo(5);
         System.out.println(memberRepository.findById(1L).get().getAge());
     }
+
+    @Test
+    public void findMemberLazy() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        memberRepository.save(new Member("노휘오", 35, teamA));
+        memberRepository.save(new Member("이민경", 31, teamB));
+
+        em.flush(); // 이 시점에 insert문 실행
+        em.clear();
+
+        // List<Member> members = memberRepository.findAll();
+        List<Member> members = memberRepository.findMemberFetchJoinTeam();
+        for (Member member : members) {
+            System.out.println(member.getTeam().getName());
+        }
+    }
 }
