@@ -39,8 +39,8 @@ public class MemberController {
         return member.getUsername();
     }
 
-    // 의존성 주입이 이루어진 후 초기화를 수행하는 메서드
-    @PostConstruct
+    // @PostConstruct: 의존성 주입이 이루어진 후 초기화를 수행하는 메서드
+    // @PostConstruct
     public void createMember () {
         for (int i = 0; i < 100; i++) {
             memberRepository.save(new Member("member" + i, i + 1));
