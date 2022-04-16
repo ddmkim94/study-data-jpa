@@ -1,11 +1,14 @@
 package study.datajpa.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import study.datajpa.dto.MemberDTO;
 import study.datajpa.entity.Member;
@@ -13,6 +16,7 @@ import study.datajpa.repository.MemberRepository;
 
 import javax.annotation.PostConstruct;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -38,8 +42,22 @@ public class MemberController {
     // 의존성 주입이 이루어진 후 초기화를 수행하는 메서드
     @PostConstruct
     public void createMember () {
-        memberRepository.save(new Member("memberA", 10));
-        memberRepository.save(new Member("memberB", 20));
+        for (int i = 0; i < 100; i++) {
+            memberRepository.save(new Member("member" + i, i + 1));
+        }
+    }
+
+    @GetMapping("/members")
+    public Page<MemberDTO> list(Pageable pageable) {
+        Page<Member> page = memberRepository.findAll(pageable);
+        Page<MemberDTO> pageDTO = page.map(m -> new MemberDTO(m));
+        return pageDTO;
+    }
+
+    @PostMapping("/members")
+    public String postPage(Pageable pageable) {
+        log.info("<<< [{}] >>>", pageable.toString());
+        return "ok";
     }
 
     @GetMapping("/page")

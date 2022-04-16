@@ -11,6 +11,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  data:
+    web:
+      pageable:
+        default-page-size: 10 # 기본 페이지 사이즈 10개로 설정
 
 logging.level:
   org.hibernate.SQL: debug
