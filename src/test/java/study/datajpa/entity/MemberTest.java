@@ -5,16 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 @SpringBootTest
 public class MemberTest {
 
-    @Autowired
-    EntityManager em;
+    @Autowired EntityManager em;
+    @Autowired MemberRepository memberRepository;
 
     @Test
     @Transactional
@@ -46,5 +46,24 @@ public class MemberTest {
             System.out.println("member = " + member);
             System.out.println("=> member.team = " + member.getTeam()); // Team 프록시 객체 초기화 (LAZY)
         }
+    }
+
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    public void JpaEventBaseEntity() throws Exception{
+        Member member = new Member("오연서", 35);
+        memberRepository.save(member); // PrePersist!! -> 생성일, 수정일 세팅!
+
+        Thread.sleep(100);
+        member.setUsername("정우");
+
+        em.flush(); // PreUpdate
+        em.clear();
+
+        Member findMember = memberRepository.findById(member.getId()).get();
+        System.out.println("findMember.createdDate : " + findMember.getCreatedDate());
+        System.out.println("findMember.updatedDate : " + findMember.getUpdatedDate());
+
     }
 }
