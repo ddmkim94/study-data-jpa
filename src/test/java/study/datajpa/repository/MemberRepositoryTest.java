@@ -233,4 +233,20 @@ class MemberRepositoryTest {
     public void customCall() {
         List<Member> members = memberRepository.findMemberCustom();
     }
+
+    @Test
+    public void projections() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        memberRepository.save(new Member("노휘오", 35, teamA));
+        memberRepository.save(new Member("이민경", 31, teamB));
+
+        em.flush(); // 이 시점에 insert문 실행
+        em.clear();
+
+        List<UsernameOnly> findUsername = memberRepository.findProjectionByUsername("이민경");
+        assertThat(findUsername.size()).isEqualTo(1);
+    }
 }
