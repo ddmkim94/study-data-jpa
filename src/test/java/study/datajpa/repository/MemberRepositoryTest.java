@@ -249,4 +249,20 @@ class MemberRepositoryTest {
         List<UsernameOnly> findUsername = memberRepository.findProjectionByUsername("이민경");
         assertThat(findUsername.size()).isEqualTo(1);
     }
+
+    @Test
+    public void nativeQuery() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        memberRepository.save(new Member("노휘오", 35, teamA));
+        memberRepository.save(new Member("이민경", 31, teamB));
+
+        em.flush(); // 이 시점에 insert문 실행
+        em.clear();
+
+        Member findMember = memberRepository.findByNativeQuery("이민경");
+        System.out.println("findMember = " + findMember);
+    }
 }
